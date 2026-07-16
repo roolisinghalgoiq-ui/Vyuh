@@ -207,9 +207,10 @@ export default function PlatformDashboard() {
 
   // Fetch proposals from API
   const fetchProposals = useCallback(async () => {
+    const apiBase = process.env.NEXT_PUBLIC_OPTIMIZER_API_URL || "http://localhost:5206";
     try {
       setLoadingProposals(true);
-      const res = await fetch("http://localhost:5206/api/v1/optimizer/vib/proposals/pending");
+      const res = await fetch(`${apiBase}/api/v1/optimizer/vib/proposals/pending`);
       if (!res.ok) {
         throw new Error(`Error ${res.status}: ${res.statusText}`);
       }
@@ -261,8 +262,9 @@ export default function PlatformDashboard() {
 
   // Respond to proposal handler
   const handleProposalResponse = async (id: string, approved: boolean) => {
+    const apiBase = process.env.NEXT_PUBLIC_OPTIMIZER_API_URL || "http://localhost:5206";
     try {
-      const res = await fetch(`http://localhost:5206/api/v1/optimizer/vib/proposals/${id}/respond`, {
+      const res = await fetch(`${apiBase}/api/v1/optimizer/vib/proposals/${id}/respond`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -333,9 +335,10 @@ export default function PlatformDashboard() {
 
   // Option Calculator Trigger API call
   const calculateOptionProbabilities = async () => {
+    const apiBase = process.env.NEXT_PUBLIC_OPTIMIZER_API_URL || "http://localhost:5206";
     setCalcLoading(true);
     try {
-      const bsmRes = await fetch("http://localhost:5206/api/v1/optimizer/probability/bsm", {
+      const bsmRes = await fetch(`${apiBase}/api/v1/optimizer/probability/bsm`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -352,7 +355,7 @@ export default function PlatformDashboard() {
         setBsmPob(bsmData.probabilityOfItm * 100);
       }
 
-      const touchRes = await fetch("http://localhost:5206/api/v1/optimizer/probability/touch", {
+      const touchRes = await fetch(`${apiBase}/api/v1/optimizer/probability/touch`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -369,7 +372,7 @@ export default function PlatformDashboard() {
         setTouchPob(touchData.probabilityOfTouch * 100);
       }
 
-      const rangeRes = await fetch("http://localhost:5206/api/v1/optimizer/probability/range", {
+      const rangeRes = await fetch(`${apiBase}/api/v1/optimizer/probability/range`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
