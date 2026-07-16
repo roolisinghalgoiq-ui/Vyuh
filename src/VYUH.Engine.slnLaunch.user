@@ -1,0 +1,23 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "Services\\Gateway\\VYUH.Gateway.Api\\VYUH.Gateway.Api.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Services\\Ingestion\\VYUH.Ingestion.Api\\VYUH.Ingestion.Api.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Services\\Optimizer\\VYUH.Optimizer.Api\\VYUH.Optimizer.Api.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Services\\Risk\\VYUH.Risk.Api\\VYUH.Risk.Api.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

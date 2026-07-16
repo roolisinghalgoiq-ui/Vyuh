@@ -1,0 +1,126 @@
+version: '3.8'
+
+services:
+  vyuh-postgres:
+    image: postgres:17-alpine
+    container_name: vyuh-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Password123
+      POSTGRES_DB: vyuh_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - vyuh-network
+
+  vyuh-redis:
+    image: redis:7.4-alpine
+    container_name: vyuh-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    networks:
+      - vyuh-network
+
+  vyuh-zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: vyuh-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - vyuh-network
+
+  vyuh-kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: vyuh-kafka
+    depends_on:
+      - vyuh-zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: vyuh-zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://vyuh-kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - vyuh-network
+
+  vyuh-gateway:
+    build:
+      context: .
+      dockerfile: src/Services/Gateway/VYUH.Gateway.Api/Dockerfile
+    container_name: vyuh-gateway
+    ports:
+      - "5000:8080"
+    depends_on:
+      - vyuh-postgres
+      - vyuh-redis
+      - vyuh-kafka
+    environment:
+      - ConnectionStrings__PostgreSQL=Host=vyuh-postgres;Database=vyuh_db;Username=postgres;Password=Password123
+      - Redis__Host=vyuh-redis:6379
+      - Kafka__BootstrapServers=vyuh-kafka:9092
+    networks:
+      - vyuh-network
+
+  vyuh-ingestion:
+    build:
+      context: .
+      dockerfile: src/Services/Ingestion/VYUH.Ingestion.Api/Dockerfile
+    container_name: vyuh-ingestion
+    ports:
+      - "5001:8080"
+    depends_on:
+      - vyuh-postgres
+      - vyuh-redis
+      - vyuh-kafka
+    environment:
+      - ConnectionStrings__PostgreSQL=Host=vyuh-postgres;Database=vyuh_db;Username=postgres;Password=Password123
+      - Redis__Host=vyuh-redis:6379
+      - Kafka__BootstrapServers=vyuh-kafka:9092
+    networks:
+      - vyuh-network
+
+  vyuh-optimizer:
+    build:
+      context: .
+      dockerfile: src/Services/Optimizer/VYUH.Optimizer.Api/Dockerfile
+    container_name: vyuh-optimizer
+    ports:
+      - "5002:8080"
+    depends_on:
+      - vyuh-postgres
+      - vyuh-redis
+    environment:
+      - ConnectionStrings__PostgreSQL=Host=vyuh-postgres;Database=vyuh_db;Username=postgres;Password=Password123
+      - Redis__Host=vyuh-redis:6379
+    networks:
+      - vyuh-network
+
+  vyuh-risk:
+    build:
+      context: .
+      dockerfile: src/Services/Risk/VYUH.Risk.Api/Dockerfile
+    container_name: vyuh-risk
+    ports:
+      - "5003:8080"
+    depends_on:
+      - vyuh-postgres
+      - vyuh-redis
+    environment:
+      - ConnectionStrings__PostgreSQL=Host=vyuh-postgres;Database=vyuh_db;Username=postgres;Password=Password123
+      - Redis__Host=vyuh-redis:6379
+    networks:
+      - vyuh-network
+
+volumes:
+  pgdata:
+  redisdata:
+
+networks:
+  vyuh-network:
+    driver: bridge

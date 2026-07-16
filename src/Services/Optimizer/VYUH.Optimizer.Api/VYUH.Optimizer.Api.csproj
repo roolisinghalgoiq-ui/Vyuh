@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="14.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VYUH.Optimizer.Application\VYUH.Optimizer.Application.csproj" />
+    <ProjectReference Include="..\VYUH.Optimizer.Infrastructure\VYUH.Optimizer.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

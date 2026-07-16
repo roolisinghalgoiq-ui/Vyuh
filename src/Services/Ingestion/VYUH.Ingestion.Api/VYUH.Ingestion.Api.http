@@ -1,0 +1,6 @@
+@VYUH.Ingestion.Api_HostAddress = http://localhost:5048
+
+GET {{VYUH.Ingestion.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
